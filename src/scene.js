@@ -83,7 +83,7 @@ export class SlotScene {
        center.setLocalPosition(0,Math.sin(angle)*2.55,Math.cos(angle)*2.55);
        center.setLocalEulerAngles(-angle*180/Math.PI,0,0);
        root.addChild(center);
-       mesh(app,center,'box','beveled gold tile back',[0,0,-.085],[2.30,1.79,.13],this.gold);
+       // Painted 3D reel surface is intentionally visible between the symbols.
        const sprite=mesh(app,center,'plane','textured symbol',[0,0,.035],[2.22,1.65,1],this.art[SYMBOLS[(index+col)%SYMBOLS.length]]);
        sprite.setLocalEulerAngles(90,0,0); // PlayCanvas planes face +Y by default.
        tiles.push(sprite);
@@ -94,7 +94,7 @@ export class SlotScene {
    this.decor=[];
    for(const side of [-1,1]){
       const pivot=new pc.Entity('hanging jewel');
-      pivot.setLocalPosition(side*6.65,0,1.5);app.root.addChild(pivot);
+      pivot.setLocalPosition(side*6.65,0,1.5);pivot.setLocalScale(.68,.68,.68);app.root.addChild(pivot);
       mesh(app,pivot,'sphere','glass ruby',[0,0,0],[.84,.98,.58],side<0?this.pink:this.purple);
       mesh(app,pivot,'cone','gold finial',[0,.65,0],[.57,.56,.57],this.gold);
       mesh(app,pivot,'cone','gold base',[0,-.65,0],[.52,.56,.52],this.gold).setLocalEulerAngles(0,0,180);
