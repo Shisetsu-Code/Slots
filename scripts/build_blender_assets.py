@@ -414,7 +414,7 @@ def create_wheel():
  # Every physical sector is a 3D extruded mesh
  n=12
  for i in range(n):
-  a=(i-.5)*2*pi/n-pi/2;b=(i+.5)*2*pi/n-pi/2
+  a=(i-.5)*2*pi/n+pi/2;b=(i+.5)*2*pi/n+pi/2
   vs=[(0,-.11,0),(.01,-.11,.01)]
   seg=12
   for j in range(seg+1):
