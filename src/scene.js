@@ -121,9 +121,14 @@ export class SlotScene {
    this.resizeObserver.observe(canvas.parentElement);
  }
  resize(){
-  const width=Math.max(1,this.canvas.clientWidth);
-  const height=Math.max(1,this.canvas.clientHeight);
+  const viewport=this.canvas.parentElement;
+  const width=Math.max(1,viewport.clientWidth);
+  const height=Math.max(1,viewport.clientHeight);
+  // Read the parent, never the old canvas size; PlayCanvas may set inline dimensions.
   this.app.resizeCanvas(width,height);
+  this.canvas.style.width='100%';
+  this.canvas.style.height='100%';
+  this.app.updateCanvasSize();
   // FOV adjusts to portrait screens, preventing hidden outer reels.
   const aspect=width/height;
   this.camera.camera.fov=Math.max(13,Math.min(65,2*Math.atan(6.35/(18*aspect))*180/Math.PI));
