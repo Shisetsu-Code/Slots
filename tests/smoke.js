@@ -33,6 +33,9 @@ try{
  await page.locator('#buy-cancel').click();
  await page.setViewportSize({width:425,height:820});
  await page.waitForTimeout(650);
+ const mobile=await page.locator('#game-canvas').evaluate(c=>({canvas:c.getBoundingClientRect().width,viewport:c.parentElement.getBoundingClientRect().width,pixels:c.width}));
+ assert.ok(Math.abs(mobile.canvas-mobile.viewport)<3,'Canvas overflows mobile viewport: '+JSON.stringify(mobile));
+ assert.ok(mobile.pixels>=300,'Mobile WebGL resolution too small: '+JSON.stringify(mobile));
  await page.screenshot({path:'artifacts/jester-mobile.png',fullPage:true});
  assert.ok(!errors.length,'JS errors: '+errors.join('; '));
  console.log('WebGL smoke test passed; screenshots in artifacts/');
