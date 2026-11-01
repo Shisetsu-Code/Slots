@@ -280,11 +280,11 @@ export class SlotScene{
     this.wheel.frame.setLocalPosition(3.10,2.38,.80);
     this.wheel.frame.setLocalScale(.57,.57,.57);
     this.wheel.gears.forEach(g=>{g.enabled=false;});
-    this.reels.forEach((r,i)=>r.root.setLocalPosition((i-2)*1.75,-1.43,.30));
-    this.reelCabinet.setLocalPosition(0,-1.50,-1.65);this.reelCabinet.setLocalScale(9.25,5.20,1.15);
-    this.reelTop.setLocalPosition(0,.90,0);this.reelTop.setLocalScale(9.4,.25,.35);
-    this.reelBottom.setLocalPosition(0,-3.82,0);this.reelBottom.setLocalScale(9.4,.25,.35);
-    this.separators.forEach((sep,i)=>sep.setLocalPosition((i-1.5)*1.75,-1.43,.58));
+    this.reels.forEach((r,i)=>r.root.setLocalPosition((i-2)*1.75,-1.05,.30));
+    this.reelCabinet.setLocalPosition(0,-1.10,-1.65);this.reelCabinet.setLocalScale(9.25,5.20,1.15);
+    this.reelTop.setLocalPosition(0,1.27,0);this.reelTop.setLocalScale(9.4,.25,.35);
+    this.reelBottom.setLocalPosition(0,-3.44,0);this.reelBottom.setLocalScale(9.4,.25,.35);
+    this.separators.forEach((sep,i)=>sep.setLocalPosition((i-1.5)*1.75,-1.05,.58));
   }else{
     this.camera.camera.fov=clamp(2*Math.atan(11.25/(25*aspect))*180/Math.PI,22,65);
     this.jester.r.setLocalPosition(-7.30,-.20,1.20);this.jester.r.setLocalScale(1,1,1);
