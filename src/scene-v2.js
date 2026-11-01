@@ -219,15 +219,17 @@ export class SlotScene{
   shape(this.stage,'box','Top giant gilded crossbar',[0,3.25,-1.8],[21.4,.25,.54],m.lightGold);
   shape(this.stage,'box','Lower bronze stage rail',[0,-2.58,-1.65],[21.5,.19,.53],m.gold);
   // A hanging cage of five 3D reels.
-  shape(this.stage,'box','Reel cabinet',[0,-.15,-1.65],[10.35,5.2,1.15],m.ink);
-  shape(this.stage,'box','Top marquee rim',[0,2.22,.00],[10.7,.25,.35],m.lightGold);
-  shape(this.stage,'box','Bottom marquee rim',[0,-2.40,.00],[10.7,.25,.35],m.lightGold);
+  this.reelCabinet=shape(this.stage,'box','Reel cabinet',[0,-.15,-1.65],[10.35,5.2,1.15],m.ink);
+  this.reelTop=shape(this.stage,'box','Top marquee rim',[0,2.22,.00],[10.7,.25,.35],m.lightGold);
+  this.reelBottom=shape(this.stage,'box','Bottom marquee rim',[0,-2.40,.00],[10.7,.25,.35],m.lightGold);
+  this.separators=[];
   this.art={};this.resources=[];
   for(const sym of SYMBOLS){
     const {texture,material}=materialFromCanvas(app,darkCardArt(sym));
     this.art[sym]=material;this.resources.push(texture,material);
   }
   this.reels=[];
+  this.mobile=false;
   const initial=generateGrid();
   for(let col=0;col<5;col++){
    const reel=node(this.stage,'Kinetic three-layer reel '+col,(col-2)*1.98,-.10,.30);
@@ -241,7 +243,7 @@ export class SlotScene{
      cards.push({pivot,glyph,row,current:initial[row][col],previousBand:-1});
    }
    this.reels.push({root:reel,cards,job:null});
-   if(col<4)shape(this.stage,'box','Reel separator '+col,[(col-1.5)*1.98,-.10,.58],[.11,4.68,.18],m.lightGold);
+   if(col<4)this.separators.push(shape(this.stage,'box','Reel separator '+col,[(col-1.5)*1.98,-.10,.58],[.11,4.68,.18],m.lightGold));
   }
   this.jester=createJester(app,this.stage,m);
   this.wheel=createWheel(app,this.stage,m);
@@ -266,7 +268,35 @@ export class SlotScene{
   this.app.resizeCanvas(w,h);
   this.canvas.style.width='100%';this.canvas.style.height='100%';this.app.updateCanvasSize();
   const aspect=w/h;
-  this.camera.camera.fov=clamp(2*Math.atan(11.25/(25*aspect))*180/Math.PI,22,65);
+  const mobile=w<700;
+  this.mobile=mobile;
+  if(mobile){
+    // Portrait: a two-level 3D theater, not a far-away horizontal stage.
+    this.camera.camera.fov=clamp(25+(1-aspect)*9,24,33);
+    this.jester.r.setLocalPosition(-3.08,2.37,1.25);
+    this.jester.r.setLocalScale(.59,.59,.59);
+    this.jester.base.setLocalPosition(-3.1,.60,.65);
+    this.jester.base.setLocalScale(1.35,.18,1.10);
+    this.wheel.frame.setLocalPosition(3.10,2.38,.80);
+    this.wheel.frame.setLocalScale(.57,.57,.57);
+    this.wheel.gears.forEach(g=>{g.enabled=false;});
+    this.reels.forEach((r,i)=>r.root.setLocalPosition((i-2)*1.75,-1.43,.30));
+    this.reelCabinet.setLocalPosition(0,-1.50,-1.65);this.reelCabinet.setLocalScale(9.25,5.20,1.15);
+    this.reelTop.setLocalPosition(0,.90,0);this.reelTop.setLocalScale(9.4,.25,.35);
+    this.reelBottom.setLocalPosition(0,-3.82,0);this.reelBottom.setLocalScale(9.4,.25,.35);
+    this.separators.forEach((sep,i)=>sep.setLocalPosition((i-1.5)*1.75,-1.43,.58));
+  }else{
+    this.camera.camera.fov=clamp(2*Math.atan(11.25/(25*aspect))*180/Math.PI,22,65);
+    this.jester.r.setLocalPosition(-7.30,-.20,1.20);this.jester.r.setLocalScale(1,1,1);
+    this.jester.base.setLocalPosition(-7.3,-2.62,.65);this.jester.base.setLocalScale(2.7,.35,2.2);
+    this.wheel.frame.setLocalPosition(7.42,.40,.80);this.wheel.frame.setLocalScale(1,1,1);
+    this.wheel.gears.forEach(g=>{g.enabled=true;});
+    this.reels.forEach((r,i)=>r.root.setLocalPosition((i-2)*1.98,-.10,.30));
+    this.reelCabinet.setLocalPosition(0,-.15,-1.65);this.reelCabinet.setLocalScale(10.35,5.2,1.15);
+    this.reelTop.setLocalPosition(0,2.22,0);this.reelTop.setLocalScale(10.7,.25,.35);
+    this.reelBottom.setLocalPosition(0,-2.40,0);this.reelBottom.setLocalScale(10.7,.25,.35);
+    this.separators.forEach((sep,i)=>sep.setLocalPosition((i-1.5)*1.98,-.10,.58));
+  }
  }
  setEmotion(next){this.emotion=next;}
  spin(grid,{turbo=false}={}){
@@ -310,7 +340,8 @@ export class SlotScene{
   j.horns.forEach((horn,i)=>horn.setLocalEulerAngles(Math.sin(t*3.6+i)*13,0,Math.sin(t*4+i)*17));
   j.props.forEach((card,i)=>{
    const a=t*(emotion==='bonus'?2.4:.7)+i*TAU/4;
-   card.setLocalPosition(-7.25+Math.cos(a)*(1.55+.22*Math.sin(t)),1.50+Math.sin(a)*.72,2.5+Math.sin(a*2)*.18);
+   if(this.mobile)card.setLocalPosition(-3.1+Math.cos(a)*1.08,3.45+Math.sin(a)*.45,2.55+Math.sin(a*2)*.10);
+   else card.setLocalPosition(-7.25+Math.cos(a)*(1.55+.22*Math.sin(t)),1.50+Math.sin(a)*.72,2.5+Math.sin(a*2)*.18);
    card.setLocalEulerAngles(t*48+i*15,t*73,i*36);
   });
   this.wheel.gears.forEach((gear,i)=>gear.setLocalEulerAngles(0,0,t*(i?40:-34)));
@@ -332,8 +363,13 @@ export class SlotScene{
   this.wheel.rotor.setLocalEulerAngles(0,0,this.wheelAngle);
   // Cinematic camera orbit and dolly; framed to keep all reels legible.
   const n=this.cameraFocus;
-  this.camera.setLocalPosition(2.1*n,Math.sin(t*.27)*.10,25-4.3*n);
-  this.camera.lookAt(4.7*n,0,0);
+  if(this.mobile){
+    this.camera.setLocalPosition(.38*n,Math.sin(t*.27)*.06,25-1.4*n);
+    this.camera.lookAt(1.25*n,0,0);
+  }else{
+    this.camera.setLocalPosition(2.1*n,Math.sin(t*.27)*.10,25-4.3*n);
+    this.camera.lookAt(4.7*n,0,0);
+  }
   this.beams[0].light.intensity=1.2+Math.sin(t*3.7)*.31+stageWave*.17;
   this.beams[1].light.intensity=1.2+Math.sin(t*4.2+1)*.35+stageWave*.25;
   this.beams[2].light.intensity=1.1+Math.sin(t*2.2)*.14;
