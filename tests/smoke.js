@@ -26,7 +26,6 @@ try{
      await page.waitForFunction(()=>Boolean(document.documentElement.dataset.productionArt),undefined,{timeout:60000});
      const state=await page.evaluate(()=>document.documentElement.dataset.productionArt);
      console.log('Production GLB loading status:',state,'warnings',JSON.stringify(browserWarnings.slice(-12)));
-     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:false,timeout:120000});
      assert.equal(state,'loaded','Production assets were rejected: '+browserWarnings.join('; '));
    }catch(e){
      console.log('Failed to load GLB art:',String(e),'errors',JSON.stringify(errors),'warnings',JSON.stringify(browserWarnings.slice(-12)));
@@ -47,7 +46,6 @@ try{
  console.log('Post-spin status:',status);
  assert.ok(!status.includes('NO SE PUDO'),status);
  assert.ok(await page.locator('#spin-button').isEnabled(),'Spin button remained disabled');
- await page.screenshot({path:'artifacts/jester-post-spin.png',fullPage:false,timeout:120000});
  await page.locator('#buy-feature').click();
  assert.ok(await page.locator('#buy-dialog').evaluate(e=>e.open),'Bonus modal did not open');
  await page.locator('#buy-cancel').click();
