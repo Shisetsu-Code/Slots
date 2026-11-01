@@ -66,7 +66,7 @@ export class SlotScene {
      root.setLocalPosition((col-2)*2.35,0,0);
      app.root.addChild(root);
      // Real three-dimensional drum, axle and metallic end caps.
-     mesh(app,root,'cylinder','spinning cylinder',[0,0,0],[.10,3.05,3.05],this.blue).setLocalEulerAngles(0,0,90);
+     mesh(app,root,'cylinder','spinning cylinder',[0,0,0],[6.10,2.00,6.10],this.blue).setLocalEulerAngles(0,0,90);
      mesh(app,root,'cylinder','hub',[0,0,0],[.14,.38,.38],this.gold).setLocalEulerAngles(0,0,90);
      const tiles=[];
      for(let index=0;index<12;index++){
@@ -77,6 +77,7 @@ export class SlotScene {
        root.addChild(center);
        mesh(app,center,'box','beveled gold tile back',[0,0,-.085],[2.02,1.88,.13],this.gold);
        const sprite=mesh(app,center,'plane','textured symbol',[0,0,.035],[1.92,1.76,1],this.art[SYMBOLS[(index+col)%SYMBOLS.length]]);
+       sprite.setLocalEulerAngles(90,0,0); // PlayCanvas planes face +Y by default.
        tiles.push(sprite);
      }
      this.reels.push({root,tiles,angle:0,job:null});
