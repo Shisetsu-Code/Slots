@@ -88,8 +88,8 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
       euler('Hat.Right',-idle*5,slow*4,-slow*9);
       euler('Hat.Center',idle*4,slow*4,idle*3);
     },
-    setDesktop(){pivot.setLocalPosition(-7.55,-2.34,1.65);pivot.setLocalScale(1.67,1.67,1.67);},
-    setMobile(){pivot.setLocalPosition(-3.15,.40,1.55);pivot.setLocalScale(1.18,1.18,1.18);},
+    setDesktop(){pivot.setLocalPosition(-7.26,-2.48,1.65);pivot.setLocalScale(1.34,1.34,1.34);},
+    setMobile(){pivot.setLocalPosition(-3.15,-.08,1.55);pivot.setLocalScale(.92,.92,.92);},
     destroy(){pivot.destroy();app.assets.remove(result);}
   };
 }
