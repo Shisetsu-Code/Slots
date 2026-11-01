@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "productionArtReady": {
+      "type": "boolean"
+    },
+    "jester": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "url"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^/assets/characters/.*\\.glb$"
+            }
+          }
+        }
+      ]
+    },
+    "wheel": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "url"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^/assets/wheels/.*\\.glb$"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "required": [
+    "productionArtReady",
+    "jester",
+    "wheel"
+  ],
+  "additionalProperties": true
+}
