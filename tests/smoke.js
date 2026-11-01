@@ -10,13 +10,28 @@ const browser=await chromium.launch({headless:true,args:[
 try{
  const page=await browser.newPage({viewport:{width:1440,height:960},deviceScaleFactor:1});
  const errors=[];
+ const browserWarnings=[];
  page.on('pageerror',e=>errors.push(String(e)));
+ page.on('console',msg=>{
+   if(msg.type()==='error'||msg.type()==='warning'){
+     browserWarnings.push(msg.type()+': '+msg.text());
+     console.log('Browser:',msg.type(),msg.text().slice(0,400));
+   }
+ });
  await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle',timeout:30000});
  await page.waitForTimeout(1500);
  const assetManifest=await page.evaluate(async()=>await (await fetch('/assets/manifest.json')).json());
  if(assetManifest.productionArtReady) {
-   await page.waitForFunction(()=>document.documentElement.dataset.productionArt==='loaded',undefined,{timeout:30000});
-   console.log('Production GLB character and wheel loaded in PlayCanvas');
+   try {
+     await page.waitForFunction(()=>Boolean(document.documentElement.dataset.productionArt),undefined,{timeout:60000});
+     const state=await page.evaluate(()=>document.documentElement.dataset.productionArt);
+     console.log('Production GLB loading status:',state,'warnings',JSON.stringify(browserWarnings.slice(-12)));
+     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:true,timeout:30000});
+     assert.equal(state,'loaded','Production assets were rejected: '+browserWarnings.join('; '));
+   }catch(e){
+     console.log('Failed to load GLB art:',String(e),'errors',JSON.stringify(errors),'warnings',JSON.stringify(browserWarnings.slice(-12)));
+     throw e;
+   }
  }
  let status=await page.locator('#status').textContent();
  console.log('Initial status:',status);
