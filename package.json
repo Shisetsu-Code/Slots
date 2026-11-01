@@ -9,7 +9,9 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test tests/*.test.js",
     "check": "npm run test && npm run build",
-    "smoke": "node tests/smoke.js"
+    "smoke": "node tests/smoke.js",
+    "art:inspect": "node scripts/inspect-glb.mjs",
+    "art:verify": "node scripts/inspect-glb.mjs public/assets/characters/mad-jester.glb jester && node scripts/inspect-glb.mjs public/assets/wheels/fortune-royale.glb wheel"
   },
   "dependencies": {
     "playcanvas": "2.23.3"
