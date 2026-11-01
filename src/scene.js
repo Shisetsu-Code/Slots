@@ -6,8 +6,8 @@ const TAU=Math.PI*2;
 function material(color,metalness=0) {
  const m=new pc.StandardMaterial();
  m.diffuse=new pc.Color(...color);
- m.metalness=metalness;
- m.gloss=metalness?84:45;
+ m.metalness=metalness*.25;
+ m.gloss=metalness?55:35;
  m.useMetalness=metalness>0;
  m.update();
  return m;
@@ -25,9 +25,11 @@ function tileMaterial(app,canvas){
  const m=new pc.StandardMaterial();
  m.diffuseMap=tex;
  m.emissiveMap=tex;
- m.emissive=new pc.Color(.38,.38,.38);
- m.emissiveIntensity=.28;
- m.metalness=.1;m.useMetalness=true;m.gloss=65;
+ m.emissive=new pc.Color(1,1,1);
+ m.emissiveIntensity=1;
+ m.useLighting=false; // preserve procedural illustration colors
+ m.useSkybox=false;
+ m.useTonemap=false;
  m.cull=pc.CULLFACE_NONE;
  m.update();
  return {texture:tex,material:m};
@@ -37,16 +39,18 @@ export class SlotScene {
    this.canvas=canvas;
    this.app=new pc.Application(canvas,{graphicsDeviceOptions:{antialias:true,alpha:true}});
    this.app.graphicsDevice.maxPixelRatio=Math.min(window.devicePixelRatio||1,2);
+   this.app.setCanvasFillMode(pc.FILLMODE_NONE);
+   this.app.setCanvasResolution(pc.RESOLUTION_AUTO);
    const app=this.app;
-   app.scene.ambientLight=new pc.Color(.72,.73,.97);
+   app.scene.ambientLight=new pc.Color(.27,.33,.46);
    const camera=new pc.Entity('Theater perspective camera');
    camera.addComponent('camera',{fov:17.5,nearClip:.1,farClip:100,clearColor:new pc.Color(.025,.025,.13,1)});
    camera.setLocalPosition(0,0,21);camera.lookAt(0,0,0);app.root.addChild(camera);this.camera=camera;
    this.lights=[];
    const lights=[
-    {pos:[-6,6,12],color:[.3,.65,1],strength:2.1},
-    {pos:[6,5,10],color:[1,.38,.7],strength:2.2},
-    {pos:[0,5,11],color:[1,.8,.45],strength:1.1}
+    {pos:[-6,6,12],color:[.3,.65,1],strength:.55},
+    {pos:[6,5,10],color:[1,.38,.7],strength:.62},
+    {pos:[0,5,11],color:[1,.8,.45],strength:.35}
    ];
    lights.forEach((l,i)=>{const e=new pc.Entity('Theater light '+i);e.addComponent('light',{type:'omni',color:new pc.Color(...l.color),intensity:l.strength,range:25,castShadows:false});e.setLocalPosition(...l.pos);app.root.addChild(e);this.lights.push(e);});
    this.gold=material([.95,.58,.18],.55);
@@ -198,7 +202,7 @@ export class SlotScene {
   } else {
      this.camera.setLocalEulerAngles(0,Math.sin(this.time*.26)*.2,0);
   }
-  this.lights[1].light.intensity=2.1+Math.sin(this.time*3.9)*.32;
+  this.lights[1].light.intensity=.62+Math.sin(this.time*3.9)*.09;
  }
  destroy(){
   this.resizeObserver?.disconnect();
