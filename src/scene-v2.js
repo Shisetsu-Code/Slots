@@ -1,6 +1,7 @@
 import * as pc from 'playcanvas';
 import {SYMBOLS, generateGrid, secureFloat} from './game.js';
 import {drawTile} from './art.js';
+import {loadPremiumJester,loadPremiumWheel} from './premium-assets.js';
 
 const TAU=Math.PI*2;
 const SLICES=[8,10,12,8,15,8,10,12,8,15,10,12];
@@ -88,7 +89,7 @@ function darkCardArt(symbol){
 function createJester(app,stage,m){
  const r=node(stage,'THE MAD JESTER (articulated 3D)',-7.30,-.20,1.20);
  const base=shape(stage,'cylinder','Jester stage pedestal',[-7.3,-2.62,.65],[2.7,.35,2.2],m.gold);
- shape(stage,'cylinder','Pedestal inlay',[-7.3,-2.40,.65],[2.45,.07,2],m.coral);
+ const inlay=shape(stage,'cylinder','Pedestal inlay',[-7.3,-2.40,.65],[2.45,.07,2],m.coral);
  const bob=node(r,'Body rig');
  // shoes and jointed legs
  const legs=[];
@@ -144,7 +145,7 @@ function createJester(app,stage,m){
   shape(card,'box','Card center sigil',[0,0,.05],[.19,.37,.02],m.ivory);
   props.push(card);
  }
- return {r,bob,head,mouth,arms,legs,horns,props,base};
+ return {r,bob,head,mouth,arms,legs,horns,props,base,inlay};
 }
 function createWheel(app,stage,m){
  const frame=node(stage,'ROULETTE RIG',7.42,.40,.80);
@@ -246,6 +247,14 @@ export class SlotScene{
    if(col<4)this.separators.push(shape(this.stage,'box','Reel separator '+col,[(col-1.5)*1.98,-.10,.58],[.11,4.68,.18],m.lightGold));
   }
   this.jester=createJester(app,this.stage,m);
+  // Primitive stand-in is only available for engineers via ?blockout=1.
+  this.blockout=new URLSearchParams(window.location.search).has('blockout');
+  this.jester.r.enabled=this.blockout;
+  this.jester.base.enabled=this.blockout;
+  this.jester.inlay.enabled=this.blockout;
+  this.jester.props.forEach(card=>card.enabled=this.blockout);
+  this.productionCharacter=null;this.productionWheel=null;
+  this.assetFailures=[];
   this.wheel=createWheel(app,this.stage,m);
   this.runningWheel=null;this.wheelAngle=0;this.cameraFocus=0;
   this.particles=[];
@@ -261,6 +270,33 @@ export class SlotScene{
   this.resize();
   this.resizeObserver=new ResizeObserver(()=>this.resize());
   this.resizeObserver.observe(canvas.parentElement);
+  this.productionArtLoad=this.loadProductionArt();
+ }
+ async loadProductionArt(){
+  try{
+    const response=await fetch('/assets/manifest.json');
+    if(!response.ok)return;
+    const manifest=await response.json();
+    if(!manifest.productionArtReady)return;
+    if(!manifest.jester?.url||!manifest.wheel?.url)throw Error('Both approved GLBs required');
+    const [character,wheel]=await Promise.all([
+      loadPremiumJester(this.app,this.stage,{url:manifest.jester.url}),
+      loadPremiumWheel(this.app,this.stage,{url:manifest.wheel.url})
+    ]);
+    // Swap the two models together: don't display a mixed quality game.
+    this.productionCharacter=character;this.productionWheel=wheel;
+    this.jester.r.enabled=false;this.jester.base.enabled=false;this.jester.inlay.enabled=false;
+    this.jester.props.forEach(card=>card.enabled=false);
+    this.wheel.frame.enabled=false;this.wheel.gears.forEach(g=>g.enabled=false);
+    this.wheel.frame=wheel.pivot;this.wheel.rotor=wheel.rotor;
+    this._lastProductionEmotion=null;
+    this.resize();
+    document.documentElement.dataset.productionArt='loaded';
+  }catch(error){
+    this.assetFailures.push(String(error));
+    document.documentElement.dataset.productionArt='missing';
+    console.warn('GLB production art not ready:',error);
+  }
  }
  resize(){
   const parent=this.canvas.parentElement;
@@ -270,6 +306,8 @@ export class SlotScene{
   const aspect=w/h;
   const mobile=w<700;
   this.mobile=mobile;
+  if(this.productionCharacter){if(mobile)this.productionCharacter.setMobile();else this.productionCharacter.setDesktop();}
+  if(this.productionWheel){if(mobile)this.productionWheel.setMobile();else this.productionWheel.setDesktop();}
   if(mobile){
     // Portrait: a two-level 3D theater, not a far-away horizontal stage.
     this.camera.camera.fov=clamp(25+(1-aspect)*9,24,33);
@@ -338,6 +376,10 @@ export class SlotScene{
   j.arms[1].setLocalEulerAngles(0,0,20+Math.sin(t*2.4+1)*12+(emotion==='bonus'?92:emotion==='spin'?30:emotion==='win'?100:0));
   j.legs.forEach((leg,i)=>leg.setLocalEulerAngles(0,0,Math.sin(t*2+i*Math.PI)*5));
   j.horns.forEach((horn,i)=>horn.setLocalEulerAngles(Math.sin(t*3.6+i)*13,0,Math.sin(t*4+i)*17));
+  if(this.productionCharacter && this._lastProductionEmotion!==this.emotion){
+    this.productionCharacter.pose(this.emotion);
+    this._lastProductionEmotion=this.emotion;
+  }
   j.props.forEach((card,i)=>{
    const a=t*(emotion==='bonus'?2.4:.7)+i*TAU/4;
    if(this.mobile)card.setLocalPosition(-3.1+Math.cos(a)*1.08,3.45+Math.sin(a)*.45,2.55+Math.sin(a*2)*.10);
@@ -429,6 +471,7 @@ export class SlotScene{
  // Keep old API compatible for the UI layer.
  animateWin(amount){this.explode(amount);}
  destroy(){
+  this.productionCharacter?.destroy();this.productionWheel?.destroy();
   this.resizeObserver?.disconnect();
   this.app.off('update',this.onUpdate);
   this.app.destroy();
