@@ -8,7 +8,7 @@ const browser=await chromium.launch({headless:true,args:[
  '--enable-unsafe-swiftshader','--disable-dev-shm-usage'
 ]});
 try{
- const page=await browser.newPage({viewport:{width:1440,height:960},deviceScaleFactor:1});
+ const page=await browser.newPage({viewport:{width:1120,height:760},deviceScaleFactor:1});
  const errors=[];
  const browserWarnings=[];
  page.on('pageerror',e=>errors.push(String(e)));
@@ -26,7 +26,7 @@ try{
      await page.waitForFunction(()=>Boolean(document.documentElement.dataset.productionArt),undefined,{timeout:60000});
      const state=await page.evaluate(()=>document.documentElement.dataset.productionArt);
      console.log('Production GLB loading status:',state,'warnings',JSON.stringify(browserWarnings.slice(-12)));
-     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:true,timeout:30000});
+     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:false,timeout:60000});
      assert.equal(state,'loaded','Production assets were rejected: '+browserWarnings.join('; '));
    }catch(e){
      console.log('Failed to load GLB art:',String(e),'errors',JSON.stringify(errors),'warnings',JSON.stringify(browserWarnings.slice(-12)));
