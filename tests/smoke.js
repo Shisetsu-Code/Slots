@@ -20,8 +20,9 @@ try{
  assert.ok(!errors.length,'JS errors: '+errors.join('; '));
  const canvas=await page.locator('#game-canvas').evaluate(c=>({w:c.width,h:c.height}));
  assert.ok(canvas.w>=500&&canvas.h>=100,'Invalid PlayCanvas canvas size '+JSON.stringify(canvas));
+ await page.locator('#turbo-button').click();
  await page.locator('#spin-button').click();
- await page.waitForTimeout(4100);
+ await page.waitForFunction(() => !document.getElementById('spin-button').disabled, undefined, {timeout:30000});
  status=await page.locator('#status').textContent();
  console.log('Post-spin status:',status);
  assert.ok(!status.includes('NO SE PUDO'),status);
