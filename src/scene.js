@@ -160,7 +160,7 @@ export class SlotScene {
    j.elapsed+=dt;
    const t=Math.min(1,j.elapsed/j.duration);
    // Fast accelerating whirls followed by slightly elastic snap.
-   const spin=5+i*.58;
+   const spin=5+i; // integer turns avoid a visible jump when the drum settles
    const progress=t<.75?t/.75*.90:.9+.1*(1-Math.pow(1-(t-.75)/.25,3));
    let angle=progress*spin*360;
    if(t<1)angle+=Math.sin(t*42)*Math.min(12,(1-t)*14);
