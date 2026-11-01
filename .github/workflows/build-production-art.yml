@@ -50,4 +50,12 @@ jobs:
           git add public/assets/characters/mad-jester.glb public/assets/wheels/fortune-royale.glb public/assets/manifest.json
           if git diff --cached --quiet; then echo "3D assets unchanged"; exit 0; fi
           git commit -m "art: import sculpted skinned Jester and brass PBR roulette GLBs"
-          git push origin HEAD:main
+          # Rebase the asset-only commit when a new source commit landed during Blender rendering.
+          git fetch origin main
+          git rebase origin/main
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main
+          done
+          exit 1
