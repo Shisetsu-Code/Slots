@@ -31,6 +31,15 @@ try{
  await page.locator('#buy-feature').click();
  assert.ok(await page.locator('#buy-dialog').evaluate(e=>e.open),'Bonus modal did not open');
  await page.locator('#buy-cancel').click();
+ // End-to-end bonus: the physical roulette must choose and credit free spins.
+ await page.locator('#buy-feature').click();
+ await page.locator('#buy-confirm').click();
+ await page.waitForFunction(() => document.getElementById('wheel-outcome').classList.contains('active'),undefined,{timeout:10000});
+ await page.screenshot({path:'artifacts/jester-bonus-wheel.png',fullPage:true});
+ await page.waitForFunction(() => document.getElementById('wheel-outcome').textContent.includes('GIROS GRATIS'),undefined,{timeout:90000});
+ const prize=await page.locator('#wheel-outcome').textContent();
+ console.log('Roulette result:',prize);
+ assert.match(prize,/8|10|12|15/);
  await page.setViewportSize({width:425,height:820});
  await page.waitForTimeout(650);
  const mobile=await page.locator('#game-canvas').evaluate(c=>({canvas:c.getBoundingClientRect().width,viewport:c.parentElement.clientWidth,pixels:c.width}));
