@@ -93,7 +93,7 @@ async function bonusShow(){
    el.wheel.textContent='+'+reward.freeSpins+' GIROS GRATIS';
    status('LA RUEDA TE REGALÓ '+reward.freeSpins+' GIROS GRATIS');
    say('¡'+reward.freeSpins+' GIROS! ¡EL SHOW DEBE CONTINUAR!');
-   fanfare();toast('LA RULETA OTORGÓ '+reward.freeSpins+' GIROS DEMO');
+   fanfare(); // Winner is already displayed by the 3D wheel and dialogue.
    await new Promise(resolve=>setTimeout(resolve,1500));
  }finally{
    state.bonus=false;el.wheel.classList.remove('active');
