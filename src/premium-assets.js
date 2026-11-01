@@ -59,6 +59,7 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
   const names=[];
   if(tracks.length){
     character.addComponent('anim',{activate:true});
+    if(!character.anim.layers?.length)character.anim.addLayer('Base',1);
     tracks.forEach((clip,i)=>{
       const clipName=clip.name || clip.resource?.name || 'clip_'+i;
       names.push(clipName);
@@ -67,7 +68,8 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
   }
 
   const assigned=pickClip(names,'idle');
-  if(assigned)character.anim.baseLayer.transition(assigned,0);
+  const animationLayer=character.anim?.baseLayer || character.anim?.layers?.[0] || null;
+  if(assigned&&animationLayer)animationLayer.transition(assigned,0);
   let last=assigned;
   return {
     asset:result,pivot,model:character,clips:names,
@@ -75,7 +77,9 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
       if(!character.anim)return false;
       const clip=pickClip(names,state);
       if(!clip || clip===last)return false;
-      character.anim.baseLayer.transition(clip,state==='idle'?.25:.12);
+      const layer=character.anim.baseLayer||character.anim.layers?.[0];
+      if(!layer)return false;
+      layer.transition(clip,state==='idle'?.25:.12);
       last=clip;return true;
     },
     setDesktop(){pivot.setLocalPosition(-7.30,-2.30,1.25);pivot.setLocalScale(1.35,1.35,1.35);},
