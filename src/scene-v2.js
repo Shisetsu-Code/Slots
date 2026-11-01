@@ -380,6 +380,7 @@ export class SlotScene{
     this.productionCharacter.pose(this.emotion);
     this._lastProductionEmotion=this.emotion;
   }
+  this.productionCharacter?.animate(t);
   j.props.forEach((card,i)=>{
    const a=t*(emotion==='bonus'?2.4:.7)+i*TAU/4;
    if(this.mobile)card.setLocalPosition(-3.1+Math.cos(a)*1.08,3.45+Math.sin(a)*.45,2.55+Math.sin(a*2)*.10);
