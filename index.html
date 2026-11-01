@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#160821">
-<meta name="description" content="Jester's Masquerade 3D — slot de demostración original en PlayCanvas">
-<title>Jester's Masquerade 3D — Slots Lab</title>
+<meta name="description" content="Mad Carnival: Jester's Roulette — slot-show 3D original en PlayCanvas">
+<title>Mad Carnival — Jester's Roulette 3D — Slots Lab</title>
 </head>
 <body>
 <div class="app">
@@ -12,7 +12,7 @@
 <main class="cabinet" id="cabinet">
 <div class="curtain left"></div><div class="curtain right"></div>
 <div class="stage-head">
-  <div class="paycard"><b>♛ CORONA</b><span>5 — 25×<br>4 — 10×<br>3 — 4×</span></div>
+  <div class="paycard"><b>♛ THE RINGMASTER</b><span>5 — 25×<br>4 — 10×<br>3 — 4×</span></div>
   <div class="game-title">
     <svg class="joker-logo" viewBox="0 0 160 158" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs><linearGradient id="hat" x2="1" y2="1"><stop stop-color="#f84d99"/><stop offset=".6" stop-color="#6e18b2"/><stop offset="1" stop-color="#29095c"/></linearGradient></defs>
@@ -23,16 +23,16 @@
       <path d="M60 120Q87 152 115 117Q90 135 60 120" fill="#d33167" stroke="#75143b" stroke-width="3"/>
       <circle cx="85" cy="117" r="7" fill="#f35c84"/>
     </svg>
-    <div><span class="eyebrow">THE GRAND SHOW PRESENTS</span><h1>JESTER'S <em>MASQUERADE</em></h1><p>✦ THREE DIMENSIONAL EDITION ✦</p></div>
+    <div><span class="eyebrow">WELCOME TO THE MAD CARNIVAL</span><h1>MAD CARNIVAL <em>JESTER'S ROULETTE</em></h1><p>✦ WHERE LUCK MEETS MADNESS ✦</p></div>
   </div>
-  <div class="paycard"><b>◆ DIAMANTE</b><span>5 — 18×<br>4 — 7×<br>3 — 3×</span></div>
+  <div class="paycard"><b>◆ THE QUEEN</b><span>5 — 18×<br>4 — 7×<br>3 — 3×</span></div>
 </div>
-<div class="feature-strip"><span>♛ JOKER WILD</span><button id="buy-feature" class="buy-feature">✦ COMPRAR BONUS DEMO <small>40× APUESTA</small></button><span>✦ 3 SCATTERS = 8 GIROS</span></div>
-<div class="pay-banner">★ &nbsp; 5 LÍNEAS DE PAGO · DE IZQUIERDA A DERECHA &nbsp; ★</div>
+<div class="feature-strip"><span>♠ EL BUFÓN ESTÁ VIVO</span><button id="buy-feature" class="buy-feature">✦ DESATAR LA RULETA <small>BONUS DEMO · 40×</small></button><span>✦ 3 SCATTERS = RUEDA BONUS</span></div>
+<div class="pay-banner">★ &nbsp; THE SHOW NEVER ENDS · 5 LÍNEAS DE PAGO &nbsp; ★</div>
 <div class="reel-housing"><div class="reel-viewport" id="reel-viewport">
   <canvas id="game-canvas" aria-label="Rodillos tridimensionales del slot"></canvas>
   <div class="lane-grid"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="vignette"></div><div class="win-lines" id="win-lines"></div>
+  <div class="vignette"></div><div class="win-lines" id="win-lines"></div><div class="scene-legend legend-jester">01 — THE RINGMASTER</div><div class="scene-legend legend-wheel">02 — WHEEL OF MADNESS</div><div id="jester-speech" class="jester-speech" aria-live="polite"></div><div id="wheel-outcome" class="wheel-outcome" role="status" aria-live="polite"></div>
   <div class="big-win" id="big-win"><span id="big-win-title">¡GRAN PREMIO!</span><b id="big-win-value">+0.00</b></div>
   <div class="free-spins" id="free-spins"></div>
 </div></div>
@@ -45,13 +45,13 @@
     <button id="bet-plus" class="round adjust" aria-label="Aumentar apuesta">+</button>
     <button id="turbo-button" class="toggle" aria-pressed="false">⚡ TURBO</button><button id="auto-button" class="toggle" aria-pressed="false">↻ AUTO</button>
   </div>
-  <p id="status" role="status">PRESIONÁ GIRAR PARA COMENZAR EL ESPECTÁCULO</p>
+  <p id="status" role="status">PRESIONÁ GIRAR PARA EMPEZAR EL CARNAVAL</p>
 </div><div class="toast" id="toast" role="status"></div>
 </main>
 <footer>Prototipo técnico original. Sin dinero real, premios rescatables ni RTP certificado. El resultado se genera en el navegador.</footer>
 </div>
-<dialog id="buy-dialog" class="modal"><div class="modal-body"><small>THE JESTER'S SECRET</small><h2>EL GRAN BONUS</h2><p>Desbloqueá 8 giros gratis de demostración por <b id="bonus-cost">40.00</b> créditos ficticios.</p><p>Este juego no está conectado a ninguna billetera o servidor de apuestas.</p><div><button id="buy-cancel">CANCELAR</button><button id="buy-confirm">ACTIVAR BONUS</button></div></div></dialog>
-<dialog id="rules-dialog" class="modal"><div class="modal-body"><small>REGLAS DE LA DEMO</small><h2>HOW TO PLAY</h2><p>5 rodillos × 3 filas, 5 líneas fijas. Tres o más símbolos iguales consecutivos desde la izquierda pagan. El Joker sustituye a otros símbolos ordinarios.</p><p>Tres Scatter activan 8 giros gratis. Todos los valores son ilustrativos y no representan un RTP certificado.</p><button id="rules-close">ENTENDIDO</button></div></dialog>
+<dialog id="buy-dialog" class="modal"><div class="modal-body"><small>THE JESTER'S SECRET</small><h2>EL GRAN BONUS</h2><p>Desbloqueá la ruleta animada y un premio aleatorio de giros gratis por <b id="bonus-cost">40.00</b> créditos ficticios.</p><p>Este juego no está conectado a ninguna billetera o servidor de apuestas.</p><div><button id="buy-cancel">CANCELAR</button><button id="buy-confirm">ACTIVAR BONUS</button></div></div></dialog>
+<dialog id="rules-dialog" class="modal"><div class="modal-body"><small>REGLAS DE LA DEMO</small><h2>EL GRAN SHOW</h2><p>5 rodillos × 3 filas, 5 líneas fijas. Tres o más símbolos iguales consecutivos desde la izquierda pagan. El Joker sustituye a otros símbolos ordinarios.</p><p>Tres Scatter activan la ruleta bonus con premios entre 8 y 15 giros. Todos los valores son ilustrativos y no representan un RTP certificado.</p><button id="rules-close">ENTENDIDO</button></div></dialog>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>
