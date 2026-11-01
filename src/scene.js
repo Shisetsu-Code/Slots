@@ -8,7 +8,11 @@ function material(color,metalness=0) {
  m.diffuse=new pc.Color(...color);
  m.metalness=metalness*.25;
  m.gloss=metalness?55:35;
- m.useMetalness=metalness>0;
+ m.useMetalness=false;
+ m.useLighting=false;
+ m.emissive=new pc.Color(...color);
+ m.emissiveIntensity=.8;
+ m.useTonemap=false;
  m.update();
  return m;
 }
@@ -44,7 +48,7 @@ export class SlotScene {
    const app=this.app;
    app.scene.ambientLight=new pc.Color(.27,.33,.46);
    const camera=new pc.Entity('Theater perspective camera');
-   camera.addComponent('camera',{fov:17.5,nearClip:.1,farClip:100,clearColor:new pc.Color(.025,.025,.13,1)});
+   camera.addComponent('camera',{fov:13.0,nearClip:.1,farClip:100,clearColor:new pc.Color(.025,.025,.13,1)});
    camera.setLocalPosition(0,0,21);camera.lookAt(0,0,0);app.root.addChild(camera);this.camera=camera;
    this.lights=[];
    const lights=[
@@ -70,17 +74,17 @@ export class SlotScene {
      root.setLocalPosition((col-2)*2.35,0,0);
      app.root.addChild(root);
      // Real three-dimensional drum, axle and metallic end caps.
-     mesh(app,root,'cylinder','spinning cylinder',[0,0,0],[6.10,2.00,6.10],this.blue).setLocalEulerAngles(0,0,90);
+     mesh(app,root,'cylinder','spinning cylinder',[0,0,0],[4.55,2.00,4.55],this.blue).setLocalEulerAngles(0,0,90);
      mesh(app,root,'cylinder','hub',[0,0,0],[.14,.38,.38],this.gold).setLocalEulerAngles(0,0,90);
      const tiles=[];
      for(let index=0;index<12;index++){
        const angle=TAU*index/12;
        const center=new pc.Entity('segment '+index);
-       center.setLocalPosition(0,Math.sin(angle)*3.05,Math.cos(angle)*3.05);
+       center.setLocalPosition(0,Math.sin(angle)*2.55,Math.cos(angle)*2.55);
        center.setLocalEulerAngles(-angle*180/Math.PI,0,0);
        root.addChild(center);
-       mesh(app,center,'box','beveled gold tile back',[0,0,-.085],[2.02,1.88,.13],this.gold);
-       const sprite=mesh(app,center,'plane','textured symbol',[0,0,.035],[1.92,1.76,1],this.art[SYMBOLS[(index+col)%SYMBOLS.length]]);
+       mesh(app,center,'box','beveled gold tile back',[0,0,-.085],[2.30,1.79,.13],this.gold);
+       const sprite=mesh(app,center,'plane','textured symbol',[0,0,.035],[2.22,1.65,1],this.art[SYMBOLS[(index+col)%SYMBOLS.length]]);
        sprite.setLocalEulerAngles(90,0,0); // PlayCanvas planes face +Y by default.
        tiles.push(sprite);
      }
@@ -109,7 +113,7 @@ export class SlotScene {
    this.time=0;
    this.pendingResolve=null;
    this.setGrid(initial);
-   this.onUpdate=(dt)=>this.update(Math.min(dt,.05));
+   this.onUpdate=(dt)=>this.update(Math.min(dt,.25));
    app.on('update',this.onUpdate);
    app.start();
    this.resize();
@@ -122,7 +126,7 @@ export class SlotScene {
   this.app.resizeCanvas(width,height);
   // FOV adjusts to portrait screens, preventing hidden outer reels.
   const aspect=width/height;
-  this.camera.camera.fov=Math.max(17.5,Math.min(65,14.9/aspect));
+  this.camera.camera.fov=Math.max(13,Math.min(65,2*Math.atan(6.35/(18*aspect))*180/Math.PI));
  }
  setGrid(grid){
   if(this.reels.some(r=>r.job))return;
