@@ -5,9 +5,9 @@ export const BET_OPTIONS = [0.20,0.40,0.60,1,2,5,10,20,50];
 export const LINES = [[0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2]];
 // Multipliers use the entire stake, not the line stake. Illustrative, not RTP-calibrated.
 export const PAY = {
- JOKER:[0,0,8,24,60],CROWN:[0,0,4,10,25],DIAMOND:[0,0,3,7,18],
- SEVEN:[0,0,5,12,30],BELL:[0,0,2.5,6,15],HEART:[0,0,2,5,12],
- STAR:[0,0,2,5,12],A:[0,0,1,2.5,6],K:[0,0,1,2.5,6],Q:[0,0,1,2.5,6]
+ JOKER:[0,0,0,8,24,60],CROWN:[0,0,0,4,10,25],DIAMOND:[0,0,0,3,7,18],
+ SEVEN:[0,0,0,5,12,30],BELL:[0,0,0,2.5,6,15],HEART:[0,0,0,2,5,12],
+ STAR:[0,0,0,2,5,12],A:[0,0,0,1,2.5,6],K:[0,0,0,1,2.5,6],Q:[0,0,0,1,2.5,6]
 };
 export const BET_LIMIT = 1_000_000; // demo balance safeguard
 
