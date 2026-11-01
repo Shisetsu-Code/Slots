@@ -1,0 +1,53 @@
+name: Generate original 3D production assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_blender_assets.py
+      - .github/workflows/build-production-art.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  model-and-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install Blender for actual glTF asset production
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender
+          blender --version | head -3
+      - name: Sculpt, rig, animate and export GLB assets
+        run: |
+          mkdir -p public/assets/characters public/assets/wheels
+          blender --background --factory-startup --python-exit-code 3 --python scripts/build_blender_assets.py
+      - name: Require GLB quality thresholds
+        run: |
+          npm run art:verify
+          ls -lh public/assets/{characters,wheels}/*.glb
+      - name: Enable production art only after validation
+        run: |
+          python3 - <<'PY'
+          import json
+          p='public/assets/manifest.json'
+          m=json.load(open(p))
+          m['productionArtReady']=True
+          m['jester']={'url':'/assets/characters/mad-jester.glb'}
+          m['wheel']={'url':'/assets/wheels/fortune-royale.glb'}
+          with open(p,'w') as f: json.dump(m,f,indent=2)
+          PY
+      - name: Commit production 3D assets to Slots
+        run: |
+          git config user.name "slots-art-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/characters/mad-jester.glb public/assets/wheels/fortune-royale.glb public/assets/manifest.json
+          if git diff --cached --quiet; then echo "3D assets unchanged"; exit 0; fi
+          git commit -m "art: import sculpted skinned Jester and brass PBR roulette GLBs"
+          git push origin HEAD:main
