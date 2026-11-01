@@ -13,6 +13,11 @@ try{
  page.on('pageerror',e=>errors.push(String(e)));
  await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle',timeout:30000});
  await page.waitForTimeout(1500);
+ const assetManifest=await page.evaluate(async()=>await (await fetch('/assets/manifest.json')).json());
+ if(assetManifest.productionArtReady) {
+   await page.waitForFunction(()=>document.documentElement.dataset.productionArt==='loaded',undefined,{timeout:30000});
+   console.log('Production GLB character and wheel loaded in PlayCanvas');
+ }
  let status=await page.locator('#status').textContent();
  console.log('Initial status:',status);
  await page.screenshot({path:'artifacts/jester-desktop.png',fullPage:true});
