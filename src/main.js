@@ -7,6 +7,7 @@ const $=id=>document.getElementById(id);
 const money=n=>Number(n).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const state={credits:1000,betIndex:3,lastWin:0,freeSpins:0,spinning:false,turbo:false,auto:false,sound:false,bonus:false};
 let scene,autoTimer,winTimer,toastTimer,speechTimer,audioContext;
+let productionReady=false;
 const el={
  cabinet:$('cabinet'),credits:$('credits'),bet:$('bet-amount'),win:$('last-win'),spin:$('spin-button'),
  minus:$('bet-minus'),plus:$('bet-plus'),buy:$('buy-feature'),auto:$('auto-button'),turbo:$('turbo-button'),
@@ -30,10 +31,10 @@ function refresh(){
  el.credits.textContent=money(state.credits);el.bet.textContent=money(getBet());
  el.win.textContent=money(state.lastWin);
  el.spin.classList.toggle('spinning',state.spinning);
- el.spin.disabled=state.spinning||state.bonus;
+ el.spin.disabled=state.spinning||state.bonus||!productionReady;
  el.minus.disabled=state.spinning||state.bonus||state.freeSpins>0||state.betIndex===0;
  el.plus.disabled=state.spinning||state.bonus||state.freeSpins>0||state.betIndex===BET_OPTIONS.length-1;
- el.buy.disabled=state.spinning||state.bonus||state.freeSpins>0||state.credits<getBet()*40;
+ el.buy.disabled=state.spinning||state.bonus||!productionReady||state.freeSpins>0||state.credits<getBet()*40;
  el.turbo.setAttribute('aria-pressed',String(state.turbo));
  el.auto.setAttribute('aria-pressed',String(state.auto));
  el.sound.setAttribute('aria-pressed',String(state.sound));
@@ -101,7 +102,7 @@ async function bonusShow(){
  }
 }
 async function runSpin(){
- if(state.spinning||state.bonus||!scene)return;
+ if(state.spinning||state.bonus||!scene||!productionReady)return;
  const bet=getBet(),free=state.freeSpins>0;
  if(!free&&state.credits<bet){state.auto=false;refresh();toast('NO QUEDAN CRÉDITOS DE DEMOSTRACIÓN');return;}
  if(free)state.freeSpins--;
@@ -158,8 +159,22 @@ window.addEventListener('pagehide',()=>{clearTimeout(autoTimer);clearTimeout(win
 refresh();
 try{
  scene=new SlotScene($('game-canvas'));
- status('LAS CORTINAS ESTÁN ABIERTAS. ¡QUE EMPIECE EL SHOW!');
- say('¡BIENVENIDOS AL CARNAVAL DE LA LOCURA!');
+ status('CARGANDO PERSONAJE 3D, MATERIALES Y RULETA...');
+ refresh();
+ scene.productionArtLoad.then(()=>{
+   productionReady=document.documentElement.dataset.productionArt==='loaded';
+   if(productionReady){
+     status('LAS CORTINAS ESTÁN ABIERTAS. ¡QUE EMPIECE EL SHOW!');
+     say('¡BIENVENIDOS AL CARNAVAL DE LA LOCURA!');
+   }else if(new URLSearchParams(location.search).has('blockout')){
+     productionReady=true;
+     status('MODO DE DESARROLLO: ARTES PROVISIONALES');
+   }else{
+     status('FALTA EL MODELO 3D DE PRODUCCIÓN. VERIFICÁ LA CARGA GLB.');
+     console.error('Cannot play without approved GLB assets:',scene.assetFailures);
+   }
+   refresh();
+ });
 }catch(e){
  console.error('PlayCanvas initialization failed',e);
  status('ERROR AL INICIAR WEBGL: REVISÁ LA ACELERACIÓN GRÁFICA.');
