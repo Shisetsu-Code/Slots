@@ -360,7 +360,42 @@ def create_jester():
   # Keep actions accessible for Blender's glTF ACTIONS exporter.
   act.use_fake_user=True
  rig.animation_data.action=None
- # Remove non-character cameras/lights
+ # The production head and costume details must actually follow the armature.
+ # Parent authored face/hair/cap objects to the animated Head bone while
+ # retaining each object's original sculpted world coordinates.
+ head_markers=(
+  'Sculpted human face','Realistic carved ear','Rose cheek glow',
+  'Upper orbital','Ivory eye sclera','Emerald eye iris','Pupil',
+  'Specular eye catchlight','Royal arched eyebrow','Sharp red stage makeup',
+  'Porcelain sculpted nose','Rose nose tip','Upper lip smile','Lower lip crimson',
+  'Back swept golden hair','Sculpted flowing blond hair strand',
+  'Purple jeweled hatband','Thick draped hat horn',
+  'Gold hat horn band','Heavy chiming brass hat bell',
+  'Bell ring','Crown band gems'
+ )
+ for ob in list(bpy.context.scene.objects):
+  if ob==rig or ob==coat or ob.type not in {'MESH','CURVE','FONT'}:continue
+  name=ob.name
+  bone=None
+  if name.startswith(head_markers):bone='Head'
+  elif name.startswith(('Pleated ivory silk ruff','Ruff pearl')):bone='Neck'
+  elif name.startswith('Puffed satin sleeve'):
+    bone='UpperArm.L' if '-1' in name else 'UpperArm.R'
+  elif name.startswith('Elegant dark forearm'):
+    bone='Forearm.L' if '-1' in name else 'Forearm.R'
+  elif name.startswith('White gloved palm'):
+    bone='Hand.L' if '-1' in name else 'Hand.R'
+  if bone:
+    world=ob.matrix_world.copy()
+    ob.parent=rig;ob.parent_type='BONE';ob.parent_bone=bone
+    ob.matrix_world=world
+
+ # Limit unnecessary tessellation for browsers and midrange phones.
+ for ob in bpy.context.scene.objects:
+  if ob.type=='MESH' and ob !=coat and len(ob.data.polygons)>600:
+   decimate=ob.modifiers.new('WebGL geometry budget','DECIMATE')
+   decimate.ratio=.74
+
  bpy.context.scene.frame_set(1)
  filepath=os.path.abspath('public/assets/characters/mad-jester.glb')
  export(filepath,animated=True)
