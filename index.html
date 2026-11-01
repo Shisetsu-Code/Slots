@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#160821">
+<meta name="description" content="Jester's Masquerade 3D — slot de demostración original en PlayCanvas">
+<title>Jester's Masquerade 3D — Slots Lab</title>
+</head>
+<body>
+<div class="app">
+<header class="site-head"><a class="brand" href="./">♠ SLOTS <b>LAB</b></a><span class="demo-chip">● MODO DEMOSTRACIÓN &nbsp; / &nbsp; PLAYCANVAS 3D</span></header>
+<main class="cabinet" id="cabinet">
+<div class="curtain left"></div><div class="curtain right"></div>
+<div class="stage-head">
+  <div class="paycard"><b>♛ CORONA</b><span>5 — 25×<br>4 — 10×<br>3 — 4×</span></div>
+  <div class="game-title">
+    <svg class="joker-logo" viewBox="0 0 160 158" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="hat" x2="1" y2="1"><stop stop-color="#f84d99"/><stop offset=".6" stop-color="#6e18b2"/><stop offset="1" stop-color="#29095c"/></linearGradient></defs>
+      <path d="M32 66Q0 0 58 35L79 57Q79 8 108 7Q140 10 113 61Q160 14 154 66L123 83L44 85Z" fill="url(#hat)" stroke="#fbd265" stroke-width="5"/>
+      <circle cx="24" cy="49" r="11" fill="#ffd66f"/><circle cx="108" cy="10" r="11" fill="#ffd66f"/><circle cx="152" cy="65" r="11" fill="#ffd66f"/>
+      <path d="M40 77Q80 54 128 80L117 126Q83 160 52 124Z" fill="#ffe1b5" stroke="#c98832" stroke-width="5"/>
+      <path d="M55 105Q67 89 77 106M94 106Q105 88 119 102" fill="none" stroke="#491158" stroke-width="7" stroke-linecap="round"/>
+      <path d="M60 120Q87 152 115 117Q90 135 60 120" fill="#d33167" stroke="#75143b" stroke-width="3"/>
+      <circle cx="85" cy="117" r="7" fill="#f35c84"/>
+    </svg>
+    <div><span class="eyebrow">THE GRAND SHOW PRESENTS</span><h1>JESTER'S <em>MASQUERADE</em></h1><p>✦ THREE DIMENSIONAL EDITION ✦</p></div>
+  </div>
+  <div class="paycard"><b>◆ DIAMANTE</b><span>5 — 18×<br>4 — 7×<br>3 — 3×</span></div>
+</div>
+<div class="feature-strip"><span>♛ JOKER WILD</span><button id="buy-feature" class="buy-feature">✦ COMPRAR BONUS DEMO <small>40× APUESTA</small></button><span>✦ 3 SCATTERS = 8 GIROS</span></div>
+<div class="pay-banner">★ &nbsp; 5 LÍNEAS DE PAGO · DE IZQUIERDA A DERECHA &nbsp; ★</div>
+<div class="reel-housing"><div class="reel-viewport" id="reel-viewport">
+  <canvas id="game-canvas" aria-label="Rodillos tridimensionales del slot"></canvas>
+  <div class="lane-grid"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="vignette"></div><div class="win-lines" id="win-lines"></div>
+  <div class="big-win" id="big-win"><span id="big-win-title">¡GRAN PREMIO!</span><b id="big-win-value">+0.00</b></div>
+  <div class="free-spins" id="free-spins"></div>
+</div></div>
+<div class="console">
+  <div class="stats"><div><small>CRÉDITO DEMO</small><strong id="credits">1,000.00</strong></div><div><small>APUESTA</small><strong id="bet-amount">1.00</strong></div><div><small>ÚLTIMO PREMIO</small><strong id="last-win">0.00</strong></div></div>
+  <div class="controls">
+    <button id="info-button" class="round small" aria-label="Información">?</button><button id="sound-button" class="round small" aria-label="Activar sonido" aria-pressed="false">♪</button>
+    <button id="bet-minus" class="round adjust" aria-label="Reducir apuesta">−</button>
+    <button id="spin-button" class="round spin" aria-label="Girar"><span class="spin-icon">↻</span><span>GIRAR</span></button>
+    <button id="bet-plus" class="round adjust" aria-label="Aumentar apuesta">+</button>
+    <button id="turbo-button" class="toggle" aria-pressed="false">⚡ TURBO</button><button id="auto-button" class="toggle" aria-pressed="false">↻ AUTO</button>
+  </div>
+  <p id="status" role="status">PRESIONÁ GIRAR PARA COMENZAR EL ESPECTÁCULO</p>
+</div><div class="toast" id="toast" role="status"></div>
+</main>
+<footer>Prototipo técnico original. Sin dinero real, premios rescatables ni RTP certificado. El resultado se genera en el navegador.</footer>
+</div>
+<dialog id="buy-dialog" class="modal"><div class="modal-body"><small>THE JESTER'S SECRET</small><h2>EL GRAN BONUS</h2><p>Desbloqueá 8 giros gratis de demostración por <b id="bonus-cost">40.00</b> créditos ficticios.</p><p>Este juego no está conectado a ninguna billetera o servidor de apuestas.</p><div><button id="buy-cancel">CANCELAR</button><button id="buy-confirm">ACTIVAR BONUS</button></div></div></dialog>
+<dialog id="rules-dialog" class="modal"><div class="modal-body"><small>REGLAS DE LA DEMO</small><h2>HOW TO PLAY</h2><p>5 rodillos × 3 filas, 5 líneas fijas. Tres o más símbolos iguales consecutivos desde la izquierda pagan. El Joker sustituye a otros símbolos ordinarios.</p><p>Tres Scatter activan 8 giros gratis. Todos los valores son ilustrativos y no representan un RTP certificado.</p><button id="rules-close">ENTENDIDO</button></div></dialog>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
