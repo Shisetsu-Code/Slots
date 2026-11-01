@@ -1,7 +1,11 @@
 {
   "$schema": "./asset-manifest.schema.json",
-  "productionArtReady": false,
-  "jester": null,
-  "wheel": null,
+  "productionArtReady": true,
+  "jester": {
+    "url": "/assets/characters/mad-jester.glb"
+  },
+  "wheel": {
+    "url": "/assets/wheels/fortune-royale.glb"
+  },
   "notes": "Set jester/wheel to objects containing url only after inserting audited GLB assets. Reference image is not a GLB."
 }
