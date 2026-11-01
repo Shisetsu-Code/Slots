@@ -1,0 +1,7 @@
+{
+  "$schema": "./asset-manifest.schema.json",
+  "productionArtReady": false,
+  "jester": null,
+  "wheel": null,
+  "notes": "Set jester/wheel to objects containing url only after inserting audited GLB assets. Reference image is not a GLB."
+}
