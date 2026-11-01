@@ -88,8 +88,8 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
       euler('Hat.Right',-idle*5,slow*4,-slow*9);
       euler('Hat.Center',idle*4,slow*4,idle*3);
     },
-    setDesktop(){pivot.setLocalPosition(-7.30,-2.30,1.25);pivot.setLocalScale(1.35,1.35,1.35);},
-    setMobile(){pivot.setLocalPosition(-3.08,.72,1.25);pivot.setLocalScale(.82,.82,.82);},
+    setDesktop(){pivot.setLocalPosition(-7.55,-2.34,1.65);pivot.setLocalScale(1.67,1.67,1.67);},
+    setMobile(){pivot.setLocalPosition(-3.15,.40,1.55);pivot.setLocalScale(1.18,1.18,1.18);},
     destroy(){pivot.destroy();app.assets.remove(result);}
   };
 }
@@ -115,8 +115,8 @@ export async function loadPremiumWheel(app,stage,{url=PRODUCTION_ASSET_PATHS.whe
   stage.addChild(pivot);pivot.addChild(model);
   return {
     asset:result,pivot,model,rotor,
-    setDesktop(){pivot.setLocalPosition(7.42,.4,.8);pivot.setLocalScale(1,1,1);},
-    setMobile(){pivot.setLocalPosition(3.10,2.38,.8);pivot.setLocalScale(.57,.57,.57);},
+    setDesktop(){pivot.setLocalPosition(7.48,.35,1.0);pivot.setLocalScale(1.15,1.15,1.15);},
+    setMobile(){pivot.setLocalPosition(3.1,2.45,.8);pivot.setLocalScale(.79,.79,.79);},
     destroy(){pivot.destroy();app.assets.remove(result);}
   };
 }
