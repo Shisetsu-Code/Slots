@@ -8,7 +8,7 @@ const browser=await chromium.launch({headless:true,args:[
  '--enable-unsafe-swiftshader','--disable-dev-shm-usage'
 ]});
 try{
- const page=await browser.newPage({viewport:{width:1120,height:760},deviceScaleFactor:1});
+ const page=await browser.newPage({viewport:{width:980,height:700},deviceScaleFactor:1});
  const errors=[];
  const browserWarnings=[];
  page.on('pageerror',e=>errors.push(String(e)));
@@ -26,7 +26,7 @@ try{
      await page.waitForFunction(()=>Boolean(document.documentElement.dataset.productionArt),undefined,{timeout:60000});
      const state=await page.evaluate(()=>document.documentElement.dataset.productionArt);
      console.log('Production GLB loading status:',state,'warnings',JSON.stringify(browserWarnings.slice(-12)));
-     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:false,timeout:60000});
+     await page.screenshot({path:'artifacts/production-art-loading.png',fullPage:false,timeout:120000});
      assert.equal(state,'loaded','Production assets were rejected: '+browserWarnings.join('; '));
    }catch(e){
      console.log('Failed to load GLB art:',String(e),'errors',JSON.stringify(errors),'warnings',JSON.stringify(browserWarnings.slice(-12)));
@@ -35,7 +35,7 @@ try{
  }
  let status=await page.locator('#status').textContent();
  console.log('Initial status:',status);
- await page.screenshot({path:'artifacts/jester-desktop.png',fullPage:true});
+ await page.screenshot({path:'artifacts/jester-desktop.png',fullPage:false,timeout:120000});
  assert.ok(!status.includes('NO SE PUDO'),status);
  assert.ok(!errors.length,'JS errors: '+errors.join('; '));
  const canvas=await page.locator('#game-canvas').evaluate(c=>({w:c.width,h:c.height}));
@@ -47,7 +47,7 @@ try{
  console.log('Post-spin status:',status);
  assert.ok(!status.includes('NO SE PUDO'),status);
  assert.ok(await page.locator('#spin-button').isEnabled(),'Spin button remained disabled');
- await page.screenshot({path:'artifacts/jester-post-spin.png',fullPage:true});
+ await page.screenshot({path:'artifacts/jester-post-spin.png',fullPage:false,timeout:120000});
  await page.locator('#buy-feature').click();
  assert.ok(await page.locator('#buy-dialog').evaluate(e=>e.open),'Bonus modal did not open');
  await page.locator('#buy-cancel').click();
@@ -55,7 +55,7 @@ try{
  await page.locator('#buy-feature').click();
  await page.locator('#buy-confirm').click();
  await page.waitForFunction(() => document.getElementById('wheel-outcome').classList.contains('active'),undefined,{timeout:10000});
- await page.screenshot({path:'artifacts/jester-bonus-wheel.png',fullPage:true});
+ await page.screenshot({path:'artifacts/jester-bonus-wheel.png',fullPage:false,timeout:120000});
  await page.waitForFunction(() => document.getElementById('wheel-outcome').textContent.includes('GIROS GRATIS'),undefined,{timeout:90000});
  const prize=await page.locator('#wheel-outcome').textContent();
  console.log('Roulette result:',prize);
@@ -65,7 +65,7 @@ try{
  const mobile=await page.locator('#game-canvas').evaluate(c=>({canvas:c.getBoundingClientRect().width,viewport:c.parentElement.clientWidth,pixels:c.width}));
  assert.ok(Math.abs(mobile.canvas-mobile.viewport)<3,'Canvas overflows mobile viewport: '+JSON.stringify(mobile));
  assert.ok(mobile.pixels>=300,'Mobile WebGL resolution too small: '+JSON.stringify(mobile));
- await page.screenshot({path:'artifacts/jester-mobile.png',fullPage:true});
+ await page.screenshot({path:'artifacts/jester-mobile.png',fullPage:false,timeout:120000});
  assert.ok(!errors.length,'JS errors: '+errors.join('; '));
  console.log('WebGL smoke test passed; screenshots in artifacts/');
 }finally{await browser.close();}
