@@ -56,31 +56,37 @@ export async function loadPremiumJester(app, stage, {url=PRODUCTION_ASSET_PATHS.
   pivot.addChild(character);
 
   const tracks=result.resource.animations || [];
-  const names=[];
-  if(tracks.length){
-    character.addComponent('anim',{activate:true});
-    if(!character.anim.layers?.length)character.anim.addLayer('Base',1);
-    tracks.forEach((clip,i)=>{
-      const clipName=clip.name || clip.resource?.name || 'clip_'+i;
-      names.push(clipName);
-      character.anim.assignAnimation(clipName,clip.resource,undefined,1,true);
-    });
-  }
-
-  const assigned=pickClip(names,'idle');
-  const animationLayer=character.anim?.baseLayer || character.anim?.layers?.[0] || null;
-  if(assigned&&animationLayer)animationLayer.transition(assigned,0);
-  let last=assigned;
+  const names=tracks.map((clip,i)=>clip.name || clip.resource?.name || 'clip_'+i);
+  // Important: imported glTF skeleton joint names are already runtime nodes.
+  // Drive those nodes directly, avoiding a second mismatched graph hierarchy.
+  const keys=['Head','Chest','UpperArm.L','UpperArm.R','Forearm.L','Forearm.R',
+    'Coat.Left','Coat.Right','Hat.Left','Hat.Right','Hat.Center'];
+  const bones=Object.fromEntries(keys.map(name=>[name,character.findByName(name)]));
+  const original=Object.fromEntries(keys.map(name=>{
+    const bone=bones[name];return [name,bone?bone.getLocalEulerAngles().clone():null];
+  }));
+  let emotion='idle';
+  const euler=(name,x,y,z)=>{
+    const b=bones[name],base=original[name];
+    if(b&&base)b.setLocalEulerAngles(base.x+x,base.y+y,base.z+z);
+  };
   return {
     asset:result,pivot,model:character,clips:names,
-    pose(state){
-      if(!character.anim)return false;
-      const clip=pickClip(names,state);
-      if(!clip || clip===last)return false;
-      const layer=character.anim.baseLayer||character.anim.layers?.[0];
-      if(!layer)return false;
-      layer.transition(clip,state==='idle'?.25:.12);
-      last=clip;return true;
+    pose(next){emotion=next;return true;},
+    animate(time){
+      const idle=Math.sin(time*1.65),slow=Math.sin(time*.73);
+      const active=emotion==='spin'?.48:emotion==='win'?1:emotion==='bonus'?.85:.12;
+      euler('Head',slow*5,-slow*7+(emotion==='bonus'?12:0),idle*4);
+      euler('Chest',0,slow*3,idle*2);
+      euler('UpperArm.L',0,0,-active*52+idle*5);
+      euler('UpperArm.R',0,0,active*66+idle*7);
+      euler('Forearm.L',0,-active*12,active*6);
+      euler('Forearm.R',0,active*24,-active*7);
+      euler('Coat.Left',idle*8,0,slow*7);
+      euler('Coat.Right',idle*9,0,-slow*8);
+      euler('Hat.Left',idle*5,slow*4,slow*9);
+      euler('Hat.Right',-idle*5,slow*4,-slow*9);
+      euler('Hat.Center',idle*4,slow*4,idle*3);
     },
     setDesktop(){pivot.setLocalPosition(-7.30,-2.30,1.25);pivot.setLocalScale(1.35,1.35,1.35);},
     setMobile(){pivot.setLocalPosition(-3.08,.72,1.25);pivot.setLocalScale(.82,.82,.82);},
