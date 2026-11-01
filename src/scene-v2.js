@@ -17,10 +17,14 @@ const easeOut=(x)=>1-Math.pow(1-clamp(x,0,1),5);
 function mat(color,{metal=.05,gloss=50,glow=0,unlit=false}={}){
  const m=new pc.StandardMaterial();
  m.diffuse=new pc.Color(...color);
- m.useMetalness=metal>0;
- m.metalness=metal;m.gloss=gloss;
- if(glow){m.emissive=new pc.Color(...color);m.emissiveIntensity=glow;}
- if(unlit){m.useLighting=false;m.useTonemap=false;}
+ // Unlit materials preserve deep velvet/pigment colors without requiring an
+ // environment cubemap; the volumetric character is built from real meshes.
+ m.useMetalness=false;
+ m.metalness=0;m.gloss=gloss;
+ m.useLighting=false;
+ m.useTonemap=false;
+ m.emissive=new pc.Color(...color);
+ m.emissiveIntensity=1;
  m.update();return m;
 }
 function node(parent,name,x=0,y=0,z=0){
@@ -148,7 +152,7 @@ function createWheel(app,stage,m){
  shape(frame,'cylinder','Inner shadow disc',[0,0,-.16],[4.36,.25,4.36],m.ink,[90,0,0]);
  const rotor=node(frame,'SIXTY SECOND OF CHAOS');
  const {material,texture}=materialFromCanvas(app,wheelCanvas());
- shape(rotor,'plane','Wheel numbered surface',[0,0,.03],[4.13,4.13,1],material,[90,0,0]);
+ shape(rotor,'plane','Wheel numbered surface',[0,0,.03],[4.13,1,4.13],material,[90,0,0]);
  shape(rotor,'cylinder','Brass center spinner',[0,0,.20],[.62,.29,.62],m.lightGold,[90,0,0]);
  for(let i=0;i<24;i++){
     const a=i/24*TAU;
@@ -233,7 +237,7 @@ export class SlotScene{
      const pivot=node(reel,'Volumetric glyph slab '+row,0,(1-row)*1.43,0);
      shape(pivot,'box','Solid beveled metal tile',[0,0,-.14],[1.85,1.31,.20],m.gold);
      shape(pivot,'box','Dark inset frame',[0,0,-.04],[1.76,1.23,.12],m.ink);
-     const glyph=shape(pivot,'plane','Illustrated carnival emblem',[0,0,.045],[1.68,1.13,1],this.art[initial[row][col]],[90,0,0]);
+     const glyph=shape(pivot,'plane','Illustrated carnival emblem',[0,0,.045],[1.68,1,1.13],this.art[initial[row][col]],[90,0,0]);
      cards.push({pivot,glyph,row,current:initial[row][col],previousBand:-1});
    }
    this.reels.push({root:reel,cards,job:null});
