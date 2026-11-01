@@ -44,6 +44,11 @@ INK=material('13 Jet eyes','#14121d',.15,.15)
 TEAL=material('14 Emerald gemstones','#007c7c',.38,.12)
 RUBY=material('15 Ruby gemstones','#a60733',.35,.10)
 AMBER=material('16 Warm lamplight','#ffd98d',.15,.17)
+# Wheel sectors have non-textured, saturated enamel pigments: avoid invalid UVs on custom wedges.
+WR=material('Wheel enamel ruby','#ac0c46',.12,.30,False)
+WV=material('Wheel enamel royal violet','#5525b2',.12,.29,False)
+WB=material('Wheel enamel midnight sapphire','#104988',.12,.28,False)
+WT=material('Wheel enamel enchanted emerald','#087776',.10,.32,False)
 
 def assign(obj,mat):
  obj.data.materials.append(mat);return obj
@@ -271,12 +276,12 @@ def create_jester():
   for n in range(9):
    a=n*TAU/9
    off=(.12*cos(a),.09*sin(a),.03)
-   uv('Layered fluted cuff frill',(hand.x+off[0]*.8,hand.y+off[1]*.7,hand.z+.04),(.10,.11,.22),CREAM,24,14)
-  uv('White gloved palm '+str(s),hand,(.19,.125,.22),CREAM,40,24)
+   uv('Layered fluted cuff frill',(hand.x+off[0]*.8,hand.y+off[1]*.7,hand.z+.04),(.080,.085,.145),CREAM,24,14)
+  uv('White gloved palm '+str(s),hand,(.13,.105,.16),CREAM,40,24)
   for i in range(5):
    start=hand+Vector((s*(i-2)*.054,-.08,-.02))
    end=start+Vector((s*.13+(i-2)*.014,-.19,.11+((i%2)*.05)))
-   capsule_between('Five individual gloved fingers',start,end,.036,CREAM,20)
+   capsule_between('Five individual gloved fingers',start,end,.028,CREAM,20)
   jewel('Large gold wristwatch',elbow+Vector((0,-.18,0)),.085,TEAL)
  # floating ornate playing cards; original 3D geometry, gold filigree
  for i in range(7):
@@ -420,7 +425,7 @@ def create_wheel():
   faces=[tuple(range(count-1,-1,-1)),tuple(range(count,2*count))]
   for j in range(count-1):
    faces.append((j,(j+1)%count,(j+1)%count+count,j+count))
-  color=[RED,PURPLE,BLACK,TEAL][i%4]
+  color=[WR,WV,WB,WT][i%4]
   ob=polygon_mesh('Cast enamel segment %02d'%i,vertices,faces,color,bevel=.019)
   ob.parent=wheel_root
   mid=(a+b)/2
